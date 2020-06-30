@@ -10,7 +10,7 @@ function readPlugin(filePath) {
   return fs.readFileSync(filePath, "utf-8");
 }
 const chartJSPath = path.resolve(
-  path.join(path.dirname(require.resolve("chart.js")), "../dist/Chart.min.js")
+  path.join(path.dirname(require.resolve("chart.js")), "../dist/Chart.bundle.js")
 );
 const chartJSSrc = readPlugin(chartJSPath);
 
