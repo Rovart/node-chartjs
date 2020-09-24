@@ -14,6 +14,15 @@ const chartJSPath = path.resolve(
 );
 const chartJSSrc = readPlugin(chartJSPath);
 
+
+function fillCanvasBackgroundWithColor(canvas, color) {
+  const context = canvas.getContext('2d');
+  context.save();
+  context.globalCompositeOperation = 'destination-over';
+  context.fillStyle = color;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.restore();
+}
 // resolve peer dependancy
 
 class ChartJs extends EventEmitter {
@@ -106,6 +115,9 @@ class ChartJs extends EventEmitter {
   }
 
   toBlob(mime) {
+    //JPEG black bg to white
+    fillCanvasBackgroundWithColor(this.canvas,"white")
+    //Finish
     const toBlobRearg = (mime, cb) =>
       this.canvas.toBlob((blob, err) => cb(err, blob), mime);
 
@@ -125,6 +137,22 @@ class ChartJs extends EventEmitter {
 
           reader.readAsArrayBuffer(blob);
         })
+    );
+  }
+  
+  toB64(mime = "image/png") {
+    return this.toBlob(mime).then(
+      blob =>
+      new Promise((resolve, reject) => {
+        const reader = new this.window.FileReader();
+
+        reader.onload = function() {
+          let resul = reader.result.split(';base64,').pop()
+          const buffer = reader.result;
+          resolve(resul);
+        };
+        reader.readAsDataURL(blob);
+      })
     );
   }
 
